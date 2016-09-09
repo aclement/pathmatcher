@@ -88,7 +88,7 @@ import java.util.regex.Pattern;
  */
 public class PathMatcher {
 
-	protected final static boolean DEBUG = true;
+	protected final static boolean DEBUG = false;
 	
 	private static final List<MatchResult> NO_MATCHES = Collections.emptyList();
 	
@@ -331,6 +331,7 @@ public class PathMatcher {
 	}
 
 	public void dumpMatcherState(PrintStream stream) {
+		if (!DEBUG) return;
 		for (Map.Entry<Integer, Segment[]> entry : patternsMap.entrySet()) {
 			stream.println("Separators: #" + entry.getKey());
 			for (Segment root : entry.getValue()) {
@@ -997,6 +998,9 @@ public class PathMatcher {
 
 		@Override
 		public boolean matches(int candidateIndex, int sn, MatchingContext matchingContext) {
+			if (candidateIndex == matchingContext.separatorPositions[sn]) {
+				return false;
+			}
 			if (constraintPattern!=null) {
 				// TODO what if not enough data for the next line?
 				Matcher m = constraintPattern.matcher(new SubSequence(matchingContext.candidate,candidateIndex,matchingContext.separatorPositions[sn]));
@@ -1291,6 +1295,7 @@ public class PathMatcher {
 					// TODO should 'break' here - why go looking for more?
 				} else {
 					for (int i = sn + 1; i <= matchingContext.separatorCount; i++) {
+						if (DEBUG)
 						System.out.println("/** skipping to next candidate, #separator=" + i + " pos=" + matchingContext.separatorPositions[i]);
 						b = nextSegment.matches(matchingContext.separatorPositions[i], i, matchingContext);
 						if (b) {
