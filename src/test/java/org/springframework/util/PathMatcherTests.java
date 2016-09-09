@@ -116,6 +116,15 @@ public class PathMatcherTests {
 	@Test
 	public void random() {
 		PathMatcher p = new PathMatcher();
+		addTemplate(p,"/{one}/**/{two}");
+		List<MatchResult> results = p.findAllMatches("/customer");
+		System.out.println(results);
+		assertEquals(0,results.size());
+		results = p.findAllMatches("/aaa/bbb");
+		System.out.println(results);
+		assertEquals(1,results.size());
+		 
+		p = new PathMatcher();
 		addTemplate(p,"/foo/bar");
 		addTemplate(p,"/boo/bar");
 		addTemplate(p,"/foo/boo");
